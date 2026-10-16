@@ -35,6 +35,22 @@
 @keyframes runaway{0%{transform:translateY(-7%);opacity:1}30%{transform:translate(10%,-23%) rotate(-8deg);opacity:1}100%{transform:translate(145%,-90%) rotate(24deg);opacity:0}}
 @keyframes tail-wiggle{to{transform:rotate(12deg)}}
 .hole.motion-paused *{animation-play-state:paused!important}
+
+/* A brief readable reaction before the cat ducks back into the orange. */
+.hole.hit .cat{opacity:1;animation:reaction-duck .42s both;transition:none}
+.hole.hit .lid{animation:reaction-lid .42s both;transition:none}
+.hole.hit .orange{height:23%;animation:reaction-bowl .42s both}
+.hole.hit .eyes i{height:3px;width:7px;background:transparent;border-top:2px solid #633e29;border-radius:50%;transform:rotate(-23deg)}
+.hole.hit .eyes i:last-child{transform:rotate(23deg)}
+.hole.hit .mouth{font-size:0;left:38%;right:auto;top:66%;width:24%;height:16%;border-top:2px solid #633e29;border-radius:50%}
+.hole.hit .head:after{content:"";position:absolute;right:-7%;top:22%;width:5px;height:8px;border-radius:60% 60% 65% 65%;background:#7bc6dc;transform:rotate(-20deg)}
+.hole.hit.surprised .eyes i{width:8px;height:8px;background:#fff;border:2px solid #633e29;border-radius:50%;transform:none}
+.hole.hit.surprised .mouth{left:41%;top:62%;width:18%;height:24%;border:2px solid #633e29;background:#bf7960;border-radius:50%}
+.hole.hit.surprised .head:after{background:#eab23e;width:3px;height:10px;right:-12%;top:6%;border-radius:2px;transform:rotate(18deg)}
+.hole.hit .pop{top:10%;font-size:14px}
+@keyframes reaction-duck{0%,43%{transform:translateY(-7%) scaleY(1);opacity:1}55%{transform:translateY(-9%) scaleY(.96);opacity:1}100%{transform:translateY(95%) scaleY(.6);opacity:0}}
+@keyframes reaction-lid{0%,43%{transform:translateY(-60%)}100%{transform:translateY(0)}}
+@keyframes reaction-bowl{0%,43%{height:23%}100%{height:42%}}
 </style>
 </head>
 <body>
@@ -72,8 +88,8 @@ $('sound').onclick=()=>{soundOn=!soundOn;updateSound();initAudio();if(soundOn)to
 function hud(){ $('score').textContent=state.score;$('time').textContent=Math.ceil(state.remaining/1000);$('lives').textContent='♥'.repeat(state.lives)+'♡'.repeat(3-state.lives);$('lives').setAttribute('aria-label',`残りライフ${state.lives}`);$('combo').textContent=`${state.combo} COMBO`;$('stage').textContent=`STAGE ${state.stage} · ${['のんびり','そわそわ','大さわぎ'][state.stage-1]}`;$('timer-fill').style.transform=`scaleX(${state.remaining/DURATION})`;document.querySelector('.progress').setAttribute('aria-valuenow',Math.ceil(state.remaining/1000))}
 function resetHole(i){holes[i].className='hole';holes[i].setAttribute('aria-label',`みかん ${i+1}：猫はいません`)}
 function spawn(){let choices=holes.map((_,i)=>i).filter(i=>i!==previous);let i=choices[Math.floor(Math.random()*choices.length)];holes.forEach((_,n)=>resetHole(n));previous=i;state.active=i;state.expires=state.remaining-[1350,1050,780][state.stage-1];holes[i].classList.add('up');holes[i].setAttribute('aria-label',`みかん ${i+1}：猫を押し戻す`)}
-function resolveCat(hit){const i=state.active;if(i<0)return;state.active=-1;holes[i].classList.remove('up');holes[i].classList.add(hit?'hit':'escaped');holes[i].setAttribute('aria-label',`みかん ${i+1}：猫はいません`);if(hit){state.combo++;state.hits++;state.maxCombo=Math.max(state.maxCombo,state.combo);const points=10+Math.floor(state.combo/3)*5;state.score+=points;holes[i].querySelector('.pop').textContent=`+${points} ✦`;$('message').textContent=state.combo>=3?`${state.combo}コンボ！ いい調子！`:'ぽんっ！ おかえりニャ。';sound('hit')}else{state.combo=0;state.lives--;holes[i].querySelector('.pop').textContent='にゃ〜！';$('message').textContent='あっ、逃げた！ 猫はお散歩へ…';sound('escape')}
- state.next=state.remaining-(hit?[400,320,250][state.stage-1]:650);hud();if(!state.lives)finish('life')}
+function resolveCat(hit){const i=state.active;if(i<0)return;state.active=-1;holes[i].classList.remove('up');holes[i].classList.add(hit?'hit':'escaped');holes[i].setAttribute('aria-label',`みかん ${i+1}：猫はいません`);if(hit){state.combo++;holes[i].classList.toggle('surprised',state.combo>=3);state.hits++;state.maxCombo=Math.max(state.maxCombo,state.combo);const points=10+Math.floor(state.combo/3)*5;state.score+=points;holes[i].querySelector('.pop').textContent=`+${points} ✦`;$('message').textContent=state.combo>=3?`${state.combo}コンボ！ 猫もびっくり！`:'あれれ、困ったニャ〜。';sound('hit')}else{state.combo=0;state.lives--;holes[i].querySelector('.pop').textContent='にゃ〜！';$('message').textContent='あっ、逃げた！ 猫はお散歩へ…';sound('escape')}
+ state.next=state.remaining-(hit?450:650);hud();if(!state.lives)finish('life')}
 function sync(now){const elapsed=Math.max(0,now-state.last);state.last=now;state.remaining=Math.max(0,state.remaining-elapsed);state.stage=Math.min(3,1+Math.floor((DURATION-state.remaining)/10000));if(state.remaining<=0){hud();finish('time');return}if(state.active>=0&&state.remaining<=state.expires)resolveCat(false);if(state.mode==='playing'&&state.active<0&&state.remaining<=state.next)spawn();hud()}
 function loop(now){if(state.mode!=='playing')return;sync(now);if(state.mode==='playing')frame=requestAnimationFrame(loop)}
 function tap(i){if(state.mode!=='playing')return;sync(performance.now());if(state.mode==='playing'&&state.active===i)resolveCat(true)}
