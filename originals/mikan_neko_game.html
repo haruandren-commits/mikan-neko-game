@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>みかんから出るニャ！</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff3db;font-family:system-ui,-apple-system,sans-serif;color:#754521;touch-action:manipulation}
+main{max-width:520px;min-height:100dvh;margin:auto;padding:18px 15px 24px;text-align:center;background:linear-gradient(#fff9e9,#ffe9bb)}
+h1{font-size:clamp(25px,7vw,36px);margin:10px 0 3px;color:#e97924}p{margin:4px 0 12px;font-size:14px}
+.hud{display:flex;justify-content:space-between;gap:8px;margin:15px 0}.stat{background:#fff;border:2px solid #f4ce9c;border-radius:17px;flex:1;padding:8px 3px;font-size:12px}.stat b{display:block;font-size:24px;color:#b85b22}
+#board{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:18px auto;max-width:430px}
+.hole{border:0;position:relative;aspect-ratio:1;background:#f9dc9f;border-radius:23px;box-shadow:inset 0 -6px #e9be7b;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.orange{position:absolute;left:12%;right:12%;bottom:8%;height:76%;border-radius:48% 48% 45% 45%;background:radial-gradient(circle at 28% 25%,#ffcd6c,#ff962e 58%,#eb6d1d);box-shadow:inset -5px -7px #df6b1b,0 4px #dba35f}
+.orange:before{content:"";position:absolute;left:45%;top:-9%;width:23%;height:17%;border-radius:90% 0;background:#62a956;transform:rotate(-30deg)}
+.cat{position:absolute;left:20%;right:20%;bottom:32%;height:54%;transform:translateY(110%) scale(.8);transition:transform .14s ease;pointer-events:none}
+.cat:before{content:"";position:absolute;inset:12% 0 0;background:#fff6df;border:3px solid #ae7d56;border-radius:46%}
+.ear{position:absolute;top:0;width:32%;height:35%;background:#fff6df;border:3px solid #ae7d56;transform:rotate(25deg);border-radius:4px 80% 0 0}.ear.l{left:5%;transform:rotate(-25deg)}.ear.r{right:5%}
+.face{position:absolute;top:40%;left:0;right:0;font-size:clamp(15px,5vw,27px);z-index:2}
+.hole.up .cat{transform:translateY(0) scale(1)}.hole.up .orange{filter:brightness(1.08)}
+.hole.hit{animation:hit .2s}@keyframes hit{50%{transform:scale(.91)}}
+#start{border:0;background:#f18531;color:white;font-size:20px;font-weight:800;border-radius:30px;padding:15px 40px;box-shadow:0 5px #bd5e1c}
+#start:disabled{opacity:.5}#message{min-height:48px;font-weight:700;font-size:17px;color:#9b4b21}
+small{display:block;margin-top:10px;color:#9a774e}
+</style></head><body><main>
+<h1>🍊 みかんから出るニャ！</h1><p>猫が飛び出す前にタップして押し戻そう！</p>
+<div class="hud"><div class="stat">スコア<b id="score">0</b></div><div class="stat">残り時間<b id="time">30</b></div><div class="stat">ライフ<b id="lives">❤️❤️❤️</b></div></div>
+<div id="board"></div><div id="message" aria-live="polite">スタートを押してね！</div>
+<button id="start">ゲームスタート ▶</button><small>成功 +10点 / 連続成功でボーナス！<br>3回逃げられたら終了。音なしでも遊べます。</small>
+</main><script>
+const board=document.querySelector('#board'), scoreEl=document.querySelector('#score'), timeEl=document.querySelector('#time'), livesEl=document.querySelector('#lives'), msg=document.querySelector('#message'), start=document.querySelector('#start');
+let score=0,time=30,lives=3,combo=0,running=false,active=-1,spawnTimer=null,expireTimer=null,clock=null;
+for(let i=0;i<9;i++){let b=document.createElement('button');b.className='hole';b.setAttribute('aria-label',`みかん ${i+1}`);b.innerHTML='<div class="cat"><i class="ear l"></i><i class="ear r"></i><div class="face">•ᴥ•</div></div><div class="orange"></div>';b.addEventListener('click',()=>whack(i));board.append(b)}
+const holes=[...board.children];
+function display(){scoreEl.textContent=score;timeEl.textContent=time;livesEl.textContent='❤️'.repeat(lives)+'🤍'.repeat(3-lives)}
+function clearCat(){clearTimeout(expireTimer);if(active>=0)holes[active].classList.remove('up');active=-1}
+function end(){running=false;clearInterval(clock);clearTimeout(spawnTimer);clearCat();start.disabled=false;start.textContent='もう一度遊ぶ ↻';msg.textContent=`終了！ ${score}点 🎉`}
+function appear(){if(!running)return;clearCat();active=Math.floor(Math.random()*9);holes[active].classList.add('up');let windowMs=Math.max(500,1250-(30-time)*21);expireTimer=setTimeout(()=>{if(active<0||!running)return;clearCat();combo=0;lives--;display();msg.textContent='あっ！逃げられた！ 🐈💨';if(lives<=0){end();return}spawnTimer=setTimeout(appear,350)},windowMs)}
+function whack(i){if(!running||active!==i)return;clearCat();combo++;let points=10+(Math.floor(combo/3)*5);score+=points;display();msg.textContent=combo>=3?`${combo}コンボ！ +${points}点 ✨`:`ナイス！ +${points}点 🍊`;holes[i].classList.add('hit');setTimeout(()=>holes[i].classList.remove('hit'),220);spawnTimer=setTimeout(appear,Math.max(160,420-(30-time)*5))}
+function begin(){clearInterval(clock);clearTimeout(spawnTimer);clearCat();score=0;time=30;lives=3;combo=0;running=true;display();start.disabled=true;start.textContent='プレイ中！';msg.textContent='猫をタップ！';clock=setInterval(()=>{time--;display();if(time<=0)end()},1000);spawnTimer=setTimeout(appear,500)}
+start.addEventListener('click',begin);display();
+</script></body></html>
