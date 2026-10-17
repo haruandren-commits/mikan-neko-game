@@ -12,25 +12,29 @@ function artwork(id){return `<svg class="scene" viewBox="0 0 160 170" aria-hidde
 <ellipse cx="80" cy="158" rx="57" ry="7" fill="#b8904b" opacity=".23"/>
 <g class="shell">
 <g class="peek"><path d="M23 117Q80 108 137 117L137 125H23Z" fill="#69492f"/><path class="peek-face" d="M52 124L54 112L59 107L64 111Q80 106 96 111L102 107L106 113L108 124Z" fill="#fffdf4" stroke="#815437" stroke-width="1.5"/><ellipse cx="66" cy="119" rx="5" ry="3" fill="#fff"/><ellipse cx="93" cy="119" rx="5" ry="3" fill="#fff"/><circle cx="66" cy="119" r="2" fill="#544033"/><circle cx="93" cy="119" r="2" fill="#544033"/></g>
-<g class="feline ink" fill="#fffdf4">
-<path class="tail-piece" d="M65 126C43 133 39 119 30 126C21 136 42 145 62 139" fill="#fffdf4"/>
-<path d="M62 120Q51 132 47 140Q50 147 64 142L76 129M98 120Q109 132 113 140Q110 147 96 142L84 129"/>
-<path d="M64 94Q55 108 61 127Q78 139 99 127Q105 108 95 94Z"/>
-<ellipse cx="80" cy="118" rx="10" ry="13" fill="#f7e5c0" stroke="none"/>
-<path d="M63 106Q49 96 45 60Q45 54 51 54Q57 54 57 62L68 92M97 106Q111 96 115 60Q115 54 109 54Q103 54 103 62L92 92"/>
-<g class="ear-piece"><path d="M50 73L49 48Q50 42 58 46L73 62M110 73L111 48Q110 42 102 46L87 62"/><path d="M55 58L55 50L65 61M105 58L105 50L95 61" fill="#efb9a5" stroke="none"/></g>
-<path class="head" d="M47 80Q44 60 68 59Q80 54 94 60Q117 61 113 82Q116 104 80 105Q44 104 47 80Z"/>
-<path d="M59 99Q80 105 101 99L99 106Q80 113 61 106Z" fill="#e79139"/>
-<circle cx="80" cy="110" r="6.5" fill="#ffd666"/><path d="M80 111V115M78 109H82" fill="none" stroke-width="1.5"/>
-<g class="face-normal"><g class="eyelids" fill="#62442f" stroke="none"><ellipse cx="66" cy="81" rx="3.3" ry="4"/><ellipse cx="94" cy="81" rx="3.3" ry="4"/></g><path d="M74 91Q77 96 80 91Q83 96 86 91" fill="none"/></g>
-<g class="face-smile" fill="none"><path d="M61 82Q66 75 71 82M89 82Q94 75 99 82M73 91Q80 100 87 91"/></g>
-<g class="face-sleepy" fill="none"><path d="M61 82H71M89 82H99"/><ellipse cx="80" cy="94" rx="3" ry="4"/></g>
-<g class="face-worried" fill="none"><path d="M60 81L71 84M100 81L89 84M74 96Q80 91 86 96"/><path d="M111 82Q118 90 112 92Q106 91 111 82" fill="#8dd1df" stroke="none"/></g>
-<g class="face-surprised"><circle cx="66" cy="82" r="6"/><circle cx="94" cy="82" r="6"/><circle cx="66" cy="83" r="2" fill="#62442f" stroke="none"/><circle cx="94" cy="83" r="2" fill="#62442f" stroke="none"/><ellipse cx="80" cy="96" rx="4" ry="5" fill="#bc816a"/></g>
-<path d="M77 87Q80 85 83 87L80 90Z" fill="#d28c7c" stroke="none"/>
-<g fill="#efc0aa" stroke="none"><ellipse cx="56" cy="90" rx="6" ry="3"/><ellipse cx="104" cy="90" rx="6" ry="3"/></g>
-<path d="M45 88L37 86M45 92L36 94M115 88L123 86M115 92L124 94" stroke-width="1.4"/>
-<g class="paws"><ellipse cx="50" cy="57" rx="7" ry="5"/><ellipse cx="110" cy="57" rx="7" ry="5"/><path d="M48 56V58M52 56V58M108 56V58M112 56V58" stroke-width="1"/></g>
+<g class="feline ink" fill="#fffef8">
+<path class="tail-piece" d="M65 126C44 137 38 123 30 128C24 135 41 144 62 138"/>
+<path d="M63 119Q51 132 45 139Q44 147 59 144L77 130M97 119Q109 132 115 139Q116 147 101 144L83 130"/>
+<path d="M62 96C63 112 49 118 56 133Q80 144 104 133C111 118 97 112 98 96Z"/>
+<path d="M77 128L83 133M83 128L77 133" fill="none" stroke-width="1.5"/>
+<path d="M62 108Q48 99 44 61Q42 53 49 53Q56 52 57 62L69 95M98 108Q112 99 116 61Q118 53 111 53Q104 52 103 62L91 95"/>
+<g class="ear-piece"><path d="M45 75L46 49Q46 43 53 46L68 62M115 75L114 49Q114 43 107 46L92 62"/><path d="M51 61L51 51L61 63M109 61L109 51L99 63" fill="#efb7ac" stroke="none"/></g>
+<path class="head" d="M42 80C40 62 58 57 80 58C102 57 120 62 118 80C120 99 102 108 80 108C58 108 40 99 42 80Z"/>
+<path d="M54 72L61 69M99 69L106 72" fill="none" stroke-width="1.7"/>
+<path d="M59 102Q80 109 101 102L100 108Q80 116 60 108Z" fill="#d88a32"/>
+<circle class="bell" cx="80" cy="115" r="10" fill="#ffc62e"/>
+<ellipse cx="77" cy="111" rx="3" ry="2" fill="#fff0a5" stroke="none"/>
+<path d="M80 114C76 114 77 119 80 119C83 119 84 114 80 114M80 119V124" fill="none" stroke-width="1.5"/>
+<g class="face-normal"><g class="eyelids"><ellipse class="round-eye" cx="68" cy="82" rx="7.8" ry="8.5"/><ellipse class="round-eye" cx="92" cy="82" rx="7.8" ry="8.5"/><ellipse cx="69" cy="83" rx="3.1" ry="4" fill="#4c3629" stroke="none"/><ellipse cx="91" cy="83" rx="3.1" ry="4" fill="#4c3629" stroke="none"/><circle cx="70" cy="81" r="1.2" fill="white" stroke="none"/><circle cx="92" cy="81" r="1.2" fill="white" stroke="none"/></g><path d="M71 98Q80 93 89 98Q80 104 71 98Z" fill="#ef9b92" stroke-width="1.5"/></g>
+<g class="face-smile" fill="none"><path d="M61 83Q68 75 75 83M85 83Q92 75 99 83"/><path d="M71 96Q80 108 89 96Z" fill="#ef9b92"/></g>
+<g class="face-sleepy" fill="none"><path d="M61 83H75M85 83H99"/><ellipse cx="80" cy="99" rx="4" ry="3" fill="#ef9b92"/></g>
+<g class="face-worried" fill="none"><path d="M61 82L74 86M99 82L86 86M73 101Q80 95 87 101"/><path d="M115 84Q122 93 116 95Q110 94 115 84" fill="#8dd1df" stroke="none"/></g>
+<g class="face-surprised"><ellipse cx="68" cy="82" rx="8.5" ry="9"/><ellipse cx="92" cy="82" rx="8.5" ry="9"/><ellipse cx="69" cy="83" rx="3" ry="4" fill="#4c3629" stroke="none"/><ellipse cx="91" cy="83" rx="3" ry="4" fill="#4c3629" stroke="none"/><ellipse cx="80" cy="99" rx="5" ry="6" fill="#ef9b92"/></g>
+<ellipse cx="80" cy="92" rx="3.4" ry="2.4" fill="#c59783" stroke-width="1.3"/>
+<g fill="#efc0aa" stroke="none"><ellipse cx="53" cy="94" rx="5" ry="2.4"/><ellipse cx="107" cy="94" rx="5" ry="2.4"/></g>
+<g fill="#56402e" stroke="none"><ellipse cx="51" cy="96" rx="3" ry="3.7"/><ellipse cx="109" cy="96" rx="3" ry="3.7"/></g>
+<path d="M48 93L34 89M48 96L33 96M48 99L35 103M112 93L126 89M112 96L127 96M112 99L125 103" stroke-width="1.4"/>
+<g class="paws"><ellipse cx="49" cy="57" rx="7" ry="5"/><ellipse cx="111" cy="57" rx="7" ry="5"/><path d="M47 56V58M51 56V58M109 56V58M113 56V58" stroke-width="1"/></g>
 </g>
 <g class="bowl-piece"><path d="M20 120Q80 127 140 120C142 171 18 171 20 120Z" fill="url(#bowl-${id})" class="ink" stroke="#c66d28"/><path d="M22 121Q80 128 138 121" fill="none" stroke="#ffe6a2" stroke-width="5"/><g fill="#d57827" opacity=".55"><circle cx="42" cy="138" r="1.5"/><circle cx="60" cy="148" r="1.5"/><circle cx="106" cy="141" r="1.6"/><circle cx="121" cy="132" r="1.2"/><circle cx="85" cy="151" r="1.2"/></g><path d="M31 132Q34 143 48 146" stroke="#ffd67d" stroke-width="4" fill="none" stroke-linecap="round"/></g>
 <g class="lid-piece"><path d="M20 120C14 49 146 49 140 120Q80 128 20 120Z" fill="url(#skin-${id})" class="ink" stroke="#c66d28"/><path d="M20 120Q80 128 140 120" class="split-line" fill="none" stroke="#9b4b20" stroke-width="2"/><path d="M36 98Q40 81 57 78" stroke="#ffe09a" stroke-width="7" fill="none" stroke-linecap="round" opacity=".85"/><g fill="#d98929" opacity=".5"><circle cx="110" cy="87" r="1.5"/><circle cx="123" cy="108" r="1.7"/><circle cx="92" cy="77" r="1.2"/></g><path d="M79 69Q82 62 84 61" stroke="#698438" stroke-width="3" fill="none"/><path d="M83 66Q94 52 108 60Q100 73 83 66" fill="#78a84c" stroke="#557c36" stroke-width="1.5"/></g>
