@@ -3,14 +3,15 @@
 const $=id=>document.getElementById(id), DURATION=30000;
 const PREP_MS=300, RISE_MS=650, ESCAPE_MS=650;
 const state={mode:'intro',score:0,combo:0,maxCombo:0,hits:0,lives:3,remaining:DURATION,stage:1,active:-1,expires:0,next:0,last:0,best:0};
-let audio=null,soundOn=false,frame=0,previous=-1;
+const sfx=new GameSound();
+let frame=0,previous=-1;
 try{state.best=Number(localStorage.getItem('mikan-neko-best'))||0}catch{}
 $('best').textContent=state.best;
 function artwork(id){return `<svg class="scene" viewBox="0 0 160 170" aria-hidden="true" focusable="false">
 <defs><radialGradient id="skin-${id}" cx="30%" cy="20%" r="80%"><stop stop-color="#ffd46a"/><stop offset=".5" stop-color="#ffad32"/><stop offset="1" stop-color="#ed7922"/></radialGradient><linearGradient id="bowl-${id}" x2="0" y2="1"><stop stop-color="#ffb746"/><stop offset="1" stop-color="#ee7d24"/></linearGradient></defs>
 <ellipse cx="80" cy="158" rx="57" ry="7" fill="#b8904b" opacity=".23"/>
 <g class="shell">
-<g class="peek"><path d="M23 117Q80 108 137 117L137 125H23Z" fill="#69492f"/><ellipse cx="66" cy="119" rx="5" ry="3" fill="#fff"/><ellipse cx="93" cy="119" rx="5" ry="3" fill="#fff"/><circle cx="66" cy="119" r="2" fill="#544033"/><circle cx="93" cy="119" r="2" fill="#544033"/></g>
+<g class="peek"><path d="M23 117Q80 108 137 117L137 125H23Z" fill="#69492f"/><path class="peek-face" d="M52 124L54 112L59 107L64 111Q80 106 96 111L102 107L106 113L108 124Z" fill="#fffdf4" stroke="#815437" stroke-width="1.5"/><ellipse cx="66" cy="119" rx="5" ry="3" fill="#fff"/><ellipse cx="93" cy="119" rx="5" ry="3" fill="#fff"/><circle cx="66" cy="119" r="2" fill="#544033"/><circle cx="93" cy="119" r="2" fill="#544033"/></g>
 <g class="feline ink" fill="#fffdf4">
 <path class="tail-piece" d="M65 126C43 133 39 119 30 126C21 136 42 145 62 139" fill="#fffdf4"/>
 <path d="M62 120Q51 132 47 140Q50 147 64 142L76 129M98 120Q109 132 113 140Q110 147 96 142L84 129"/>
@@ -22,6 +23,8 @@ function artwork(id){return `<svg class="scene" viewBox="0 0 160 170" aria-hidde
 <path d="M59 99Q80 105 101 99L99 106Q80 113 61 106Z" fill="#e79139"/>
 <circle cx="80" cy="110" r="6.5" fill="#ffd666"/><path d="M80 111V115M78 109H82" fill="none" stroke-width="1.5"/>
 <g class="face-normal"><g class="eyelids" fill="#62442f" stroke="none"><ellipse cx="66" cy="81" rx="3.3" ry="4"/><ellipse cx="94" cy="81" rx="3.3" ry="4"/></g><path d="M74 91Q77 96 80 91Q83 96 86 91" fill="none"/></g>
+<g class="face-smile" fill="none"><path d="M61 82Q66 75 71 82M89 82Q94 75 99 82M73 91Q80 100 87 91"/></g>
+<g class="face-sleepy" fill="none"><path d="M61 82H71M89 82H99"/><ellipse cx="80" cy="94" rx="3" ry="4"/></g>
 <g class="face-worried" fill="none"><path d="M60 81L71 84M100 81L89 84M74 96Q80 91 86 96"/><path d="M111 82Q118 90 112 92Q106 91 111 82" fill="#8dd1df" stroke="none"/></g>
 <g class="face-surprised"><circle cx="66" cy="82" r="6"/><circle cx="94" cy="82" r="6"/><circle cx="66" cy="83" r="2" fill="#62442f" stroke="none"/><circle cx="94" cy="83" r="2" fill="#62442f" stroke="none"/><ellipse cx="80" cy="96" rx="4" ry="5" fill="#bc816a"/></g>
 <path d="M77 87Q80 85 83 87L80 90Z" fill="#d28c7c" stroke="none"/>
@@ -40,11 +43,14 @@ const holes=Array.from({length:9},(_,i)=>{
  b.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;e.preventDefault();tap(i)});
  b.addEventListener('click',e=>{if(e.detail===0)tap(i)});$('board').append(b);return b;
 });
-function initAudio(){if(!soundOn)return;try{audio ||= new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{})}catch{soundOn=false;updateSound()}}
-function tone(freq,duration,delay=0,type='sine',endFreq=freq){if(!soundOn||!audio||audio.state!=='running')return;try{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(endFreq,t+duration);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.13,t+.012);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+duration+.02)}catch{}}
-function sound(kind){if(kind==='hit'){tone(650,.09,0,'sine',260);tone(900,.1,.06)}else if(kind==='escape'){tone(800,.18,0,'triangle',1100);tone(1050,.23,.17,'triangle',350)}else if(kind==='end'){[523,659,784,1047].forEach((f,i)=>tone(f,.22,i*.12))}else if(kind==='start'){tone(523,.12);tone(784,.2,.12)}}
-function updateSound(){$('sound').textContent=`音：${soundOn?'ON':'OFF'}`;$('sound').setAttribute('aria-pressed',String(soundOn))}
-$('sound').onclick=()=>{soundOn=!soundOn;updateSound();initAudio();if(soundOn)tone(660,.1)};
+function initAudio(){return sfx.unlock()}
+function sound(kind){sfx.play(kind,state.combo)}
+function updateSound(){$('sound').textContent=`音：${sfx.enabled?'ON':'OFF'}`;$('sound').setAttribute('aria-pressed',String(sfx.enabled))}
+$('sound').onclick=()=>{
+ sfx.setEnabled(!sfx.enabled);updateSound();
+ if(sfx.enabled){const generation=sfx.generation;initAudio().then(()=>{if(generation===sfx.generation && state.mode!=='paused')sound('appear')})}
+};
+updateSound();
 function setText(id,value){const el=$(id),text=String(value);if(el.textContent!==text)el.textContent=text}
 function hud(){
  setText('score',state.score);setText('time',Math.ceil(state.remaining/1000));
@@ -57,14 +63,36 @@ function hud(){
  const progress=document.querySelector('.progress'),seconds=String(Math.ceil(state.remaining/1000));
  if(progress.getAttribute('aria-valuenow')!==seconds)progress.setAttribute('aria-valuenow',seconds);
 }
-function resetHole(i){holes[i].className='hole';holes[i].dataset.phase='idle';holes[i].setAttribute('aria-label',`みかん ${i+1}：猫はいません`)}
+function resetHole(i){holes[i].className='hole';holes[i].dataset.phase='idle';delete holes[i].dataset.kind;holes[i].setAttribute('aria-label',`みかん ${i+1}：猫はいません`)}
+function randomDelay(){
+ const [min,max]=[[800,1500],[520,1100],[520,800]][state.stage-1];
+ return Math.round(min+Math.random()*(max-min));
+}
+function scheduleNext(recovery=0){state.next=state.remaining-Math.max(recovery,randomDelay())}
 function spawn(){
- const choices=holes.map((_,i)=>i).filter(i=>i!==previous);
+ // Repeats are allowed, but limit runs to two to keep positions varied.
+ let choices=holes.map((_,i)=>i);
+ if(state.repeat>=2)choices=choices.filter(i=>i!==previous);
  const i=choices[Math.floor(Math.random()*choices.length)];
- holes.forEach((_,n)=>resetHole(n));previous=i;state.active=i;state.born=state.remaining;
+ holes.forEach((_,n)=>resetHole(n));state.repeat=i===previous?(state.repeat||0)+1:1;previous=i;
+ state.active=i;state.born=state.remaining;state.appeared=false;
+ const roll=state.events++===0?1:Math.random();
+ state.kind=roll<.12?'feint':roll<.24?'peek':'cat';
+ state.energetic=state.events>1 && state.kind==='cat' && Math.random()<.16;
+ state.riseMs=state.energetic?520:RISE_MS;
  state.expires=state.remaining-PREP_MS-[1350,1050,780][state.stage-1];
- holes[i].classList.add('emerging');holes[i].dataset.phase='preparing';
- holes[i].setAttribute('aria-label',`みかん ${i+1}：猫が準備中`);
+ const h=holes[i];h.dataset.kind=state.kind;
+ if(state.kind==='feint'){
+  h.classList.add('feint');h.dataset.phase='feint';state.eventEnd=state.remaining-420;
+  h.setAttribute('aria-label',`みかん ${i+1}：震えるだけ`);
+ }else if(state.kind==='peek'){
+  h.classList.add('peek-only');h.dataset.phase='peek';state.eventEnd=state.remaining-780;
+  h.setAttribute('aria-label',`みかん ${i+1}：ちょい顔出し、見送ってOK`);
+ }else{
+  h.classList.add('emerging');if(state.energetic)h.classList.add('energetic');
+  h.classList.add(['expression-calm','expression-smile','expression-sleepy'][Math.floor(Math.random()*3)]);
+  h.dataset.phase='preparing';h.setAttribute('aria-label',`みかん ${i+1}：猫が準備中`);
+ }
 }
 function launchEscape(i){
  const rect=holes[i].getBoundingClientRect(),flight=document.createElement('div');
@@ -87,11 +115,11 @@ function resolveCat(hit){
   const points=10+Math.floor(state.combo/3)*5;state.score+=points;
   holes[i].querySelector('.pop').textContent=`+${points} / ${state.combo}コンボ`;
   $('message').textContent=state.combo>=3?`${state.combo}コンボ！ 猫もびっくり！`:'わっ！ みかんへおかえりニャ。';
-  sound('hit');state.next=state.remaining-560;
+  $('combo').classList.remove('combo-bounce');void $('combo').offsetWidth;$('combo').classList.add('combo-bounce');sound('hit');scheduleNext(560);
  }else{
   state.combo=0;launchEscape(i);state.escaping=i;state.escapeDone=state.remaining-ESCAPE_MS;
   holes[i].querySelector('.pop').textContent='にゃ〜！';
-  $('message').textContent='あっ、猫がお散歩へ…！';sound('escape');state.next=state.remaining-850;
+  $('message').textContent='あっ、猫がお散歩へ…！';scheduleNext(850);state.escapeSoundAt=state.remaining-180;state.escapeSaid=false;
  }
  hud();
 }
@@ -99,29 +127,38 @@ function sync(now){
  const elapsed=Math.max(0,now-state.last);state.last=now;
  state.remaining=Math.max(0,state.remaining-elapsed);
  state.stage=Math.min(3,1+Math.floor((DURATION-state.remaining)/10000));
+ if(state.escaping>=0 && !state.escapeSaid && state.remaining<=state.escapeSoundAt){state.escapeSaid=true;sound('escape')}
  if(state.escaping>=0 && state.remaining<=state.escapeDone){
   resetHole(state.escaping);clearFlights();state.escaping=-1;state.lives--;hud();
   if(!state.lives){finish('life');return}
  }
  if(state.remaining<=0){hud();finish('time');return}
+ const seconds=Math.ceil(state.remaining/1000);
+ if(seconds<=5 && seconds!==state.lastCount){state.lastCount=seconds;sound('countdown')}
  if(state.active>=0){
-  const h=holes[state.active],age=state.born-state.remaining;
-  if(age>=PREP_MS && !h.classList.contains('up')){
-   h.classList.add('up');h.dataset.phase='rising';
-   h.setAttribute('aria-label',`みかん ${state.active+1}：猫と上の皮をタップ`);
+  const i=state.active,h=holes[i],age=state.born-state.remaining;
+  if(state.kind!=='cat'){
+   if(state.kind==='peek' && age>=100 && !state.appeared){state.appeared=true;sound('appear')}
+   if(state.remaining<=state.eventEnd){$('message').textContent=state.kind==='feint'?'あれ？ 震えただけ。ライフはそのまま！':'ひょこっ。またあとでニャ！';resetHole(i);state.active=-1;scheduleNext()}
+  }else{
+   if(age>=100 && !state.appeared){state.appeared=true;sound('appear')}
+   if(age>=PREP_MS && !h.classList.contains('up')){
+    h.classList.add('up');h.dataset.phase='rising';
+    h.setAttribute('aria-label',`みかん ${i+1}：猫と上の皮をタップ`);
+   }
+   if(age>=state.riseMs){h.classList.add('holding');h.dataset.phase='holding'}
+   if(state.remaining<=state.expires)resolveCat(false);
   }
-  if(age>=RISE_MS){h.classList.add('holding');h.dataset.phase='holding'}
-  if(state.remaining<=state.expires)resolveCat(false);
  }
  if(state.mode==='playing' && state.active<0 && state.escaping<0 && state.remaining<=state.next)spawn();
  hud();
 }
 function loop(now){if(state.mode!=='playing')return;sync(now);if(state.mode==='playing')frame=requestAnimationFrame(loop)}
-function tap(i){if(state.mode!=='playing')return;sync(performance.now());if(state.mode==='playing'&&state.active===i && state.born-state.remaining>=PREP_MS)resolveCat(true)}
-function begin(){clearFlights();cancelAnimationFrame(frame);Object.assign(state,{mode:'playing',score:0,combo:0,maxCombo:0,hits:0,lives:3,remaining:DURATION,stage:1,active:-1,escaping:-1,escapeDone:0,born:0,next:DURATION-450,last:performance.now()});previous=-1;holes.forEach((_,i)=>resetHole(i));['intro','result','paused'].forEach(id=>$(id).hidden=true);$('pause').disabled=false;$('message').textContent='顔が出たら、ぽんっ！';initAudio();sound('start');hud();holes[0].focus({preventScroll:true});frame=requestAnimationFrame(loop)}
-function finish(reason){if(state.mode!=='playing')return;state.mode='ended';clearFlights();cancelAnimationFrame(frame);if(state.active>=0)resetHole(state.active);state.active=-1;$('pause').disabled=true;$('end-reason').textContent=reason==='time'?'30秒、おしまい！':'3匹の猫がお散歩に出かけました。';$('final-score').textContent=state.score;$('final-combo').textContent=state.maxCombo;$('final-hits').textContent=state.hits;const record=state.score>state.best;if(record){state.best=state.score;try{localStorage.setItem('mikan-neko-best',String(state.best))}catch{}}$('best').textContent=state.best;$('record').textContent=record?'✨ 自己ベスト更新！':'またいっしょに遊ぼうニャ。';$('result').hidden=false;$('retry').focus();sound('end')}
-function pause(){if(state.mode!=='playing')return;sync(performance.now());if(state.mode!=='playing')return;state.mode='paused';document.querySelectorAll('.hole,.escape-flight').forEach(h=>h.classList.add('motion-paused'));cancelAnimationFrame(frame);$('paused').hidden=false;$('resume').focus()}
-function resume(){if(document.hidden||state.mode!=='paused')return;state.mode='playing';document.querySelectorAll('.hole,.escape-flight').forEach(h=>h.classList.remove('motion-paused'));state.last=performance.now();$('paused').hidden=true;initAudio();holes[Math.max(0,state.active)].focus({preventScroll:true});frame=requestAnimationFrame(loop)}
+function tap(i){if(state.mode!=='playing')return;sync(performance.now());if(state.mode==='playing'&&state.active===i && state.kind==='cat' && state.born-state.remaining>=PREP_MS)resolveCat(true)}
+function begin(){$('combo').style.animationPlayState='running';$('combo').classList.remove('combo-bounce');sfx.stop();sfx.silent=false;clearFlights();cancelAnimationFrame(frame);Object.assign(state,{mode:'playing',score:0,combo:0,maxCombo:0,hits:0,lives:3,remaining:DURATION,stage:1,active:-1,escaping:-1,escapeDone:0,born:0,events:0,repeat:0,lastCount:6,next:DURATION-450,last:performance.now()});previous=-1;holes.forEach((_,i)=>resetHole(i));['intro','result','paused'].forEach(id=>$(id).hidden=true);$('pause').disabled=false;$('message').textContent='顔が出たら、ぽんっ！';const generation=sfx.generation;initAudio().then(()=>{if(generation===sfx.generation && state.mode==='playing')sound('start')});hud();holes[0].focus({preventScroll:true});frame=requestAnimationFrame(loop)}
+function finish(reason){if(state.mode!=='playing')return;state.mode='ended';sfx.stop();clearFlights();cancelAnimationFrame(frame);if(state.active>=0)resetHole(state.active);state.active=-1;$('pause').disabled=true;$('end-reason').textContent=reason==='time'?'30秒、おしまい！':'3匹の猫がお散歩に出かけました。';$('final-score').textContent=state.score;$('final-combo').textContent=state.maxCombo;$('final-hits').textContent=state.hits;const record=state.score>state.best;if(record){state.best=state.score;try{localStorage.setItem('mikan-neko-best',String(state.best))}catch{}}$('best').textContent=state.best;$('record').textContent=record?'✨ 自己ベスト更新！':'またいっしょに遊ぼうニャ。';$('result').hidden=false;$('retry').focus();sound(record?'record':'end')}
+function pause(){if(state.mode!=='playing')return;sync(performance.now());if(state.mode!=='playing')return;state.mode='paused';$('combo').style.animationPlayState='paused';sfx.pause();document.querySelectorAll('.hole,.escape-flight').forEach(h=>h.classList.add('motion-paused'));cancelAnimationFrame(frame);$('paused').hidden=false;$('resume').focus()}
+function resume(){if(document.hidden||state.mode!=='paused')return;state.mode='playing';$('combo').style.animationPlayState='running';document.querySelectorAll('.hole,.escape-flight').forEach(h=>h.classList.remove('motion-paused'));state.last=performance.now();$('paused').hidden=true;sfx.resume();holes[Math.max(0,state.active)].focus({preventScroll:true});frame=requestAnimationFrame(loop)}
 $('start').onclick=begin;$('retry').onclick=begin;$('pause').onclick=pause;$('resume').onclick=resume;$('help').onclick=()=>{if(state.mode==='playing')pause();else{$('result').hidden=true;$('intro').hidden=false;$('start').focus()}};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});window.addEventListener('pagehide',pause);
 // Keep keyboard focus inside the visible modal. Pointer play uses pointerdown only.

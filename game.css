@@ -61,3 +61,21 @@
 .flight-stage{position:fixed;inset:0;z-index:15;overflow:hidden;pointer-events:none}
 .flight-stage .escape-flight{position:absolute}
 .hole.escaped .feline,.hole.escaped .lid-piece{animation:none}
+/* Harmless decoys use their own timelines and never enter the hittable state. */
+.feint .shell{animation:shake-shell .42s ease-in-out both}
+.peek-only .lid-piece{animation:peek-lid .78s ease-in-out both}
+.peek-only .peek{animation:peek-look .78s both}
+.peek-only .shell{animation:shake-shell .3s ease-in-out}
+@keyframes peek-lid{0%,12%,100%{transform:none}30%,65%{transform:translateY(-15px) rotate(-2deg)}}
+@keyframes peek-look{0%,15%,85%,100%{opacity:0}30%,65%{opacity:1}}
+.energetic.emerging .feline,.energetic.emerging .lid-piece,.energetic.emerging .bowl-piece,.energetic.emerging .peek{animation-duration:.52s}
+.energetic.holding .feline{animation-duration:.65s}
+.face-smile,.face-sleepy{display:none}
+.expression-smile:not(.hit):not(.escaped) .face-normal,.expression-sleepy:not(.hit):not(.escaped) .face-normal{display:none}
+.expression-smile:not(.hit):not(.escaped) .face-smile,.expression-sleepy:not(.hit):not(.escaped) .face-sleepy{display:inline}
+#combo{display:inline-block;transform-origin:right center}
+#combo.combo-bounce{animation:combo-pop .3s ease-out}
+@keyframes combo-pop{40%{transform:scale(1.2);color:#d34e1e}100%{transform:scale(1)}}
+.motion-paused .combo-bounce{animation-play-state:paused!important}
+
+.peek-face{display:none}.peek-only .peek-face{display:inline}
