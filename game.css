@@ -1,0 +1,63 @@
+:root{color-scheme:light;--ink:#64422c;--cream:#fffaf0;--orange:#ee7925}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(ellipse at top,#fff9e8,#ffedbd);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-tap-highlight-color:transparent}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:3px solid #387962;outline-offset:3px}main{width:min(100%,490px);margin:auto;text-align:center;padding:max(12px,env(safe-area-inset-top)) 14px max(20px,env(safe-area-inset-bottom))}.topline{display:flex;align-items:center;justify-content:space-between;color:#99734e;font-size:10px;letter-spacing:2px;font-weight:800}.sound,.secondary{border:1px solid #e3c99b;border-radius:22px;background:var(--cream);padding:9px 13px;font-size:12px;letter-spacing:0;font-weight:700}h1{font-size:clamp(25px,7vw,36px);letter-spacing:-1.5px;margin:11px 0 3px;color:#d56820;line-height:1.3}h1 span{color:var(--ink)}.subtitle{font-size:12px;color:#9c7854;margin:0 0 12px}.hud{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px}.stat{border:1px solid #ebd5ad;border-radius:16px;background:#fffcf3;padding:7px 2px;font-size:10px;font-weight:750;letter-spacing:.5px}.stat b{display:block;font-size:25px;line-height:1.4;letter-spacing:0}.stat:first-child b{color:#d66c24}#lives{font-size:22px;color:#df805a}.progress{height:6px;background:#ebd6a8;border-radius:8px;overflow:hidden;margin:11px 2px}#timer-fill{height:100%;background:#e7a23d;transform-origin:left}.meta{display:flex;justify-content:space-between;font-size:11px;font-weight:800;padding:0 4px}#combo{color:#c96927}#board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:9px;margin:11px 0 9px;border:2px solid #e7c790;border-radius:25px;background:linear-gradient(#f6e5bd,#eed6a4);box-shadow:0 6px #d5b787}.hole{position:relative;aspect-ratio:.94;min-width:0;border:0;border-radius:18px;padding:0;background:radial-gradient(ellipse at 50% 70%,#fff0c9,#f4dfa8);box-shadow:inset 0 3px 5px #c29b5425;overflow:hidden;user-select:none;-webkit-user-select:none;isolation:isolate}.scene{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}.scene *{vector-effect:non-scaling-stroke}.ink{stroke:#815437;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.feline,.peek{opacity:0}.feline{transform:translateY(64px) scaleY(.7);transform-origin:80px 140px}.lid-piece,.bowl-piece,.feline,.shell{transform-box:view-box;transform-origin:80px 120px}.tail-piece{transform-origin:63px 126px}.ear-piece{transform-origin:80px 80px}.eyelids{transform-origin:80px 82px}.face-surprised,.face-worried{display:none}.split-line{opacity:.25}.pop{position:absolute;z-index:2;inset:17% 0 auto;font-size:clamp(13px,4vw,19px);font-weight:900;pointer-events:none;color:#aa5419;text-shadow:0 1px #fff8df,1px 0 #fff8df;opacity:0}.stars{opacity:0;transform-origin:80px 75px}
+/* One continuous opening: shake, crack and eyes, then stretch into the raised pose. */
+.emerging .shell{animation:shake-shell .3s ease-in-out}
+.emerging .lid-piece{animation:lift-lid .65s cubic-bezier(.2,.8,.25,1) both}
+.emerging .bowl-piece{animation:lower-bowl .65s cubic-bezier(.2,.8,.25,1) both}
+.emerging .peek{animation:peek-eyes .65s both}
+.emerging .feline{animation:stand-up .65s cubic-bezier(.2,.8,.25,1) both}
+.holding .lid-piece{animation:lid-sway 1s ease-in-out infinite alternate}
+.holding .feline{animation:cat-breathe 1.4s ease-in-out infinite alternate}
+.holding .bowl-piece{animation:none;transform:translateY(16px) scaleY(.65)}
+.holding .peek{animation:none;opacity:0}
+.holding .eyelids{animation:blink 2.5s infinite}
+.holding .ear-piece{animation:ear-twitch 1.8s ease-in-out infinite}
+.holding .tail-piece{animation:tail-swish .65s ease-in-out infinite alternate}
+.hit .feline{animation:duck-cat .5s cubic-bezier(.35,0,.6,1) both}
+.hit .lid-piece{animation:close-lid .5s both}
+.hit .bowl-piece{animation:close-bowl .5s both}
+.hit .face-normal{display:none}.hit .face-surprised{display:inline}.hit:not(.surprised) .face-worried{display:none}
+.hit:not(.surprised) .face-surprised{display:inline}
+.hit .stars{animation:star-burst .55s ease-out both}
+.hit .pop{animation:score-pop .55s both}
+.hit .shell{animation:closed-bounce .5s both}
+.escaped .feline{animation:escape-cat .65s cubic-bezier(.25,.3,.6,1) both}
+.escaped .lid-piece{animation:toss-lid .65s ease-out both}
+.escaped .bowl-piece{transform:translateY(16px) scaleY(.65)}
+.escaped .face-normal{display:none}.escaped .face-surprised{display:inline}
+.escaped .pop{animation:score-pop .65s both;color:#a35847}
+.motion-paused *{animation-play-state:paused!important}
+.illustration{width:150px;height:140px;margin:8px auto!important}.illustration .feline{opacity:1;transform:none}.illustration .lid-piece{transform:translateY(-62px)}.illustration .bowl-piece{transform:translateY(16px) scaleY(.65)}
+@keyframes shake-shell{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-2px) rotate(-1deg)}40%,80%{transform:translateX(2px) rotate(1deg)}}
+@keyframes lift-lid{0%,16%{transform:translateY(0)}32%,44%{transform:translateY(-9px)}85%{transform:translateY(-65px) rotate(-2deg)}100%{transform:translateY(-62px)}}
+@keyframes lower-bowl{0%,44%{transform:none}100%{transform:translateY(16px) scaleY(.65)}}
+@keyframes peek-eyes{0%,20%{opacity:0}28%,47%{opacity:1}60%,100%{opacity:0}}
+@keyframes stand-up{0%,43%{opacity:0;transform:translateY(64px) scaleY(.7)}48%{opacity:1;transform:translateY(60px) scaleY(.7)}85%{opacity:1;transform:translateY(-3px) scaleY(1.04)}100%{opacity:1;transform:none}}
+@keyframes lid-sway{from{transform:translateY(-62px) rotate(-1deg)}to{transform:translateY(-63px) rotate(1deg)}}
+@keyframes cat-breathe{from{opacity:1;transform:scaleY(1)}to{opacity:1;transform:scaleY(1.015)}}
+@keyframes blink{0%,43%,49%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+@keyframes ear-twitch{0%,70%,100%{transform:none}80%{transform:rotate(-3deg)}90%{transform:rotate(2deg)}}
+@keyframes tail-swish{from{transform:rotate(-8deg)}to{transform:rotate(12deg)}}
+@keyframes duck-cat{0%,30%{opacity:1;transform:none}45%{opacity:1;transform:translateY(-4px) scaleY(1.06)}86%,100%{opacity:0;transform:translateY(75px) scaleY(.55)}}
+@keyframes close-lid{0%,30%{transform:translateY(-62px)}78%{transform:none}90%{transform:translateY(-5px)}100%{transform:none}}
+@keyframes close-bowl{0%,30%{transform:translateY(16px) scaleY(.65)}78%,100%{transform:none}}
+@keyframes closed-bounce{0%,75%,100%{transform:none}86%{transform:scale(1.05,.94)}}
+@keyframes star-burst{0%{opacity:0;transform:scale(.6)}22%{opacity:1}100%{opacity:0;transform:translateY(-16px) scale(1.2)}}
+@keyframes score-pop{0%{opacity:0;transform:translateY(8px)}18%,70%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+@keyframes escape-cat{0%{opacity:1;transform:none}25%{opacity:1;transform:translateY(7px) scaleY(.85)}50%{opacity:1;transform:translate(10px,-24px) rotate(-8deg)}100%{opacity:0;transform:translate(190px,-140px) rotate(20deg)}}
+@keyframes toss-lid{0%{opacity:1;transform:translateY(-62px)}35%{opacity:1;transform:translate(-15px,-80px) rotate(-25deg)}100%{opacity:0;transform:translate(-110px,-140px) rotate(-110deg)}}
+#message{min-height:25px;margin:13px 0 8px;font-size:13px;font-weight:800}.controls{display:flex;justify-content:center;gap:10px}.foot{font-size:10px;line-height:1.8;color:#9a7953;margin:12px 0 0}.overlay{position:fixed;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#67462666;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);overflow:auto}.overlay[hidden]{display:none}.card{width:min(100%,370px);max-height:calc(100dvh - 40px);overflow:auto;background:var(--cream);border:2px solid #fff;border-radius:28px;padding:23px 22px;text-align:center;box-shadow:0 15px 55px #5f3e2944}.badge{display:inline-block;font-size:11px;letter-spacing:2px;font-weight:800;background:#f5e4ba;border-radius:25px;padding:6px 12px}.hero{font-size:48px;margin:12px 0;line-height:1.2}.card h2{font-size:24px;color:#c56123;margin:10px 0}.card p{font-size:13px;line-height:1.9;margin:10px 0}.how{padding:13px;background:#f5ead1;border-radius:16px;text-align:left;font-size:13px;line-height:2}.primary{display:block;width:100%;border:0;border-radius:18px;background:#ec812c;color:white;font-size:18px;font-weight:850;padding:15px 8px;box-shadow:0 5px #bf6022;margin:18px 0 8px}.hint{font-size:10px!important;color:#9a7954}.result-score{font-size:52px;font-weight:900;color:#d36b26;margin:10px;line-height:1.2}.result-score small{font-size:16px}.result-details{display:flex;justify-content:center;gap:25px;font-size:12px;line-height:2}.result-details b{display:block;font-size:20px}
+@media(max-height:700px){main{padding-top:7px}h1{margin-top:5px}.subtitle{margin-bottom:7px}.stat{padding:4px 2px}#board{max-width:330px;margin:9px auto;gap:4px;padding:7px}#message{margin-top:11px}.foot{margin-top:7px}}
+@media(prefers-reduced-motion:reduce){.emerging .shell,.holding .ear-piece,.holding .tail-piece,.holding .eyelids{animation:none}.holding .lid-piece{animation:none;transform:translateY(-62px)}.holding .feline{animation:none;opacity:1;transform:none}.hit .shell{animation:none}}
+
+/* Escape uses a temporary fixed layer so the cat can leap beyond its grid cell. */
+.escape-flight{position:fixed;z-index:15;pointer-events:none;overflow:visible}
+.escape-flight .scene{overflow:visible}
+.escape-flight .bowl-piece,.escape-flight .peek,.escape-flight .stars,.escape-flight .scene>ellipse{display:none}
+.hole.escaped .feline,.hole.escaped .lid-piece{visibility:hidden}
+.escape-flight .feline{animation:flight-cat .65s cubic-bezier(.25,.3,.6,1) both}
+@keyframes flight-cat{0%{opacity:1;transform:none}20%{opacity:1;transform:translateY(7px) scaleY(.85)}45%{opacity:1;transform:translate(15px,-30px) rotate(-8deg)}100%{opacity:0;transform:translate(var(--flight-x),-190px) rotate(28deg)}}
+
+.hit.surprised .face-surprised{transform:scale(1.07);transform-origin:80px 88px}
+.flight-stage{position:fixed;inset:0;z-index:15;overflow:hidden;pointer-events:none}
+.flight-stage .escape-flight{position:absolute}
+.hole.escaped .feline,.hole.escaped .lid-piece{animation:none}
